@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💎 DiamondBot</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>💎 DiamondBot</h1>
+            <div class="server-info">
+                <span>🌐 Window-smp.aternos.me:54008</span>
+                <span>📦 v1.21.1</span>
+            </div>
+        </div>
+
+        <!-- Status Card -->
+        <div class="card status-card">
+            <div class="status-row">
+                <div class="status-indicator">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span class="status-text" id="statusText">OFFLINE</span>
+                </div>
+                <div class="action-text" id="actionText">-</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="card controls-card">
+            <button class="btn btn-start" id="btnStart" onclick="startBot()">
+                ▶️ START BOT
+            </button>
+            <button class="btn btn-stop" id="btnStop" onclick="stopBot()" disabled>
+                ⏹️ STOP BOT
+            </button>
+        </div>
+
+        <!-- Coordinates -->
+        <div class="card coords-card" id="coordsCard" style="display:none;">
+            <h3>📍 Coordinates</h3>
+            <div class="coords-display" id="coordsDisplay">
+                X: 0 | Y: 0 | Z: 0
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="card settings-card">
+            <h3>⚙️ Settings</h3>
+            
+            <div class="setting-row">
+                <label>Move Radius</label>
+                <input type="range" id="moveRadius" min="1" max="50" value="10" oninput="updateValue('radiusVal', this.value)">
+                <span id="radiusVal">10</span>
+            </div>
+            
+            <div class="setting-row">
+                <label>Move Speed</label>
+                <input type="range" id="moveSpeed" min="1" max="10" value="5" oninput="updateValue('speedVal', this.value)">
+                <span id="speedVal">5</span>
+            </div>
+            
+            <div class="setting-row">
+                <label>Jump</label>
+                <label class="switch">
+                    <input type="checkbox" id="jumpEnabled" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <button class="btn btn-save" onclick="saveSettings()">💾 SAVE</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="card stats-card">
+            <h3>📊 Stats</h3>
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="stat-num" id="chatCount">0</div>
+                    <div class="stat-label">Chats</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num" id="replyCount">0</div>
+                    <div class="stat-label">Replies</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num" id="moveCount">0</div>
+                    <div class="stat-label">Moves</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs -->
+        <div class="card logs-card">
+            <h3>📜 Logs</h3>
+            <div class="logs" id="logs">
+                <div class="log-line">Waiting to start...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
