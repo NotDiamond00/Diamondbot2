@@ -1,0 +1,12 @@
+{
+  "name": "diamondbot",
+  "version": "1.0.0",
+  "description": "DiamondBot - Simple 24/7 AFK Bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "mineflayer": "^4.20.0"
+  }
+}
