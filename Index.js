@@ -1,5 +1,6 @@
 /**
- * 💎 DIAMONDBOT - AFK Bot with Auto Chat
+ * 💎 DIAMONDBOT - 24/7 AFK Bot
+ * Auto Respawn + Auto Reconnect
  * Auto chat every 2 minutes
  * Server: Window-smp.aternos.me:54008
  */
@@ -8,8 +9,8 @@ const mineflayer = require('mineflayer');
 
 // ========== CONFIG ==========
 const BOT_USERNAME = 'DiamondBot';
-const SERVER_HOST = 'Window-smp.aternos.me';
-const SERVER_PORT = 54008;
+const SERVER_HOST = 'Crimson-SMP-S1.aternos.me';
+const SERVER_PORT = 24283;
 const SERVER_VERSION = '1.21.1';
 
 // ========== SETTINGS ==========
@@ -17,8 +18,8 @@ const MOVE_RADIUS = 10;
 const MOVE_SPEED = 5;
 const JUMP_ENABLED = true;
 const MOVE_INTERVAL = 5000;
-const CHAT_INTERVAL = 120000; // 2 minutes (120 seconds)
-const RECONNECT_DELAY = 10000;
+const CHAT_INTERVAL = 120000; // 2 minutes
+const RECONNECT_DELAY = 10000; // 10 sec after disconnect
 
 // ========== CHAT MESSAGES ==========
 const CHAT_MESSAGES = [
@@ -37,6 +38,7 @@ const CHAT_MESSAGES = [
 // ========== BOT ==========
 let bot = null;
 let isConnected = false;
+let deathCount = 0;
 
 function log(msg) {
     const time = new Date().toLocaleTimeString();
@@ -60,17 +62,36 @@ function createBot() {
         auth: 'offline'
     });
 
-    // ✅ CONNECTED
+    // ✅ CONNECTED / RESPAWN
     bot.on('spawn', () => {
         isConnected = true;
         log('✅ DiamondBot online!');
         log(`📍 Position: ${bot.entity.position}`);
         
-        // Start moving
         startMoving();
-        
-        // Start auto chat (every 2 minutes)
         startAutoChat();
+    });
+
+    // 💀 DEATH - AUTO RESPAWN
+    bot.on('death', () => {
+        deathCount++;
+        log(`💀 Bot died! Death #${deathCount}`);
+        log('🔄 Auto respawning...');
+        
+        // Automatically respawn after 3 seconds
+        setTimeout(() => {
+            if (bot && isConnected) {
+                try {
+                    bot.chat('💎 DiamondBot respawned!');
+                    log('✅ Respawned successfully!');
+                } catch (e) {
+                    log('❌ Respawn failed, reconnecting...');
+                    isConnected = false;
+                    bot = null;
+                    setTimeout(createBot, RECONNECT_DELAY);
+                }
+            }
+        }, 3000);
     });
 
     // 💬 REPLY TO "hay/hi/hello"
@@ -97,7 +118,7 @@ function createBot() {
 
     // 🔌 DISCONNECTED
     bot.on('end', () => {
-        log('❌ Disconnected!');
+        log('❌ Disconnected from server!');
         isConnected = false;
         bot = null;
         
@@ -108,6 +129,14 @@ function createBot() {
     // ❌ ERROR
     bot.on('error', (err) => {
         log(`❌ Error: ${err.message}`);
+        
+        // If connection refused, try reconnect
+        if (err.message.includes('ECONNREFUSED') || err.message.includes('connection refused')) {
+            log('🔄 Server offline? Retrying...');
+            isConnected = false;
+            bot = null;
+            setTimeout(createBot, RECONNECT_DELAY);
+        }
     });
 }
 
@@ -150,18 +179,17 @@ function startAutoChat() {
             log(`💬 Auto chat: "${msg}"`);
         } catch (e) {}
         
-        // Next chat after 2 minutes
         setTimeout(sendChat, CHAT_INTERVAL);
     }
     
-    // First chat after 30 seconds
-    setTimeout(sendChat, 30000);
+    setTimeout(sendChat, 30000); // First chat after 30 sec
 }
 
 // ========== START ==========
 log('🚀 DiamondBot starting...');
 log(`🌐 Server: ${SERVER_HOST}:${SERVER_PORT}`);
 log(`💬 Auto chat every ${CHAT_INTERVAL/1000} seconds`);
+log(`💀 Auto respawn enabled`);
 createBot();
 
 // ========== GRACEFUL SHUTDOWN ==========
@@ -172,4 +200,4 @@ process.on('SIGINT', () => {
     }
     process.exit(0);
 });
-          
+        
